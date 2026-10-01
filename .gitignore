@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Database (jangan di-commit)
+evaluasi.db
+evaluasi.db-shm
+evaluasi.db-wal
+
+# Data peserta asli (privasi)
+participants.json
+daftar_peserta*.md
+
+# OS / editor
+.DS_Store
+*.log
+.env
+.env.*

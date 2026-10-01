@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0ea5e9" />
+  <title>Hasil Penilaian - Tes Divisi</title>
+  <style>
+    :root {
+      --bg: #f0f9ff;
+      --card: #ffffff;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --primary-soft: #e0f2fe;
+      --ok: #059669;
+      --ok-soft: #d1fae5;
+      --warn: #d97706;
+      --warn-soft: #fef3c7;
+      --bad-soft: #fee2e2;
+      --green: #dcfce7;
+      --green-text: #166534;
+      --yellow: #fef3c7;
+      --yellow-text: #92400e;
+      --red: #fee2e2;
+      --red-text: #991b1b;
+      --neutral: #f8fafc;
+      --shadow: 0 8px 24px rgba(2, 132, 199, 0.12);
+      --radius: 14px;
+      --header-h: 64px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top right, rgba(14, 165, 233, 0.16), transparent 26%),
+        radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.1), transparent 28%),
+        var(--bg);
+    }
+
+    button, input, select { font: inherit; }
+
+    .app {
+      min-height: 100vh;
+      padding: calc(var(--header-h) + 10px) 10px 24px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      min-height: var(--header-h);
+      padding: 8px 12px;
+      padding-top: calc(8px + env(safe-area-inset-top, 0px));
+      color: white;
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 55%, #0369a1 100%);
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.28);
+    }
+
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 1rem;
+    }
+
+    .brand span {
+      display: block;
+      font-size: 0.76rem;
+      opacity: 0.92;
+      margin-top: 1px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      min-height: 36px;
+      padding: 8px 12px;
+      font-weight: 800;
+      font-size: 0.86rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn-light {
+      color: #0c4a6e;
+      background: white;
+    }
+
+    .btn-primary {
+      color: white;
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .card h2 {
+      margin: 0 0 4px;
+      font-size: 1rem;
+    }
+
+    .card p.help {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.4;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .stat {
+      border-radius: 12px;
+      padding: 12px 10px;
+      background: linear-gradient(180deg, #f8fcff, #e0f2fe);
+      border: 1px solid #bae6fd;
+      text-align: center;
+    }
+
+    .stat .value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      line-height: 1.15;
+    }
+
+    .stat .label {
+      margin-top: 2px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .toolbar {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .search-input,
+    .filter-select {
+      width: 100%;
+      border: 2px solid #bae6fd;
+      background: #f8fcff;
+      border-radius: 10px;
+      padding: 10px 12px;
+      min-height: 42px;
+      color: var(--ink);
+      outline: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .search-input:focus,
+    .filter-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+      background: white;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #0c4a6e;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: white;
+    }
+
+    .swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .swatch.green { background: var(--green); }
+    .swatch.yellow { background: var(--yellow); }
+    .swatch.red { background: var(--red); }
+    .swatch.neutral { background: var(--neutral); border-color: var(--line); }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 6px 3px;
+      text-align: center;
+      font-size: 0.78rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      background: linear-gradient(180deg, #f0f9ff, #e0f2fe);
+      color: #0c4a6e;
+      font-weight: 800;
+      z-index: 1;
+      font-size: 0.68rem;
+      line-height: 1.15;
+      padding: 7px 2px;
+      border-bottom: 2px solid #bae6fd;
+    }
+
+    tbody tr {
+      background: white;
+    }
+
+    tbody tr:hover {
+      background: #f8fcff;
+    }
+
+    td.rank-cell {
+      width: 36px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      font-size: 0.8rem;
+    }
+
+    td.name-cell {
+      width: 148px;
+      text-align: left;
+      padding-left: 8px;
+      padding-right: 4px;
+      cursor: pointer;
+      white-space: normal;
+      vertical-align: middle;
+    }
+
+    td.name-cell:hover .name {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+
+    td.name-cell .name {
+      display: block;
+      font-weight: 800;
+      color: #0c4a6e;
+      font-size: 0.78rem;
+      line-height: 1.2;
+    }
+
+    td.name-cell .sub {
+      display: block;
+      margin-top: 2px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    td.name-cell .sub.lengkap { color: #047857; }
+    td.name-cell .sub.partial { color: #b45309; }
+    td.name-cell .sub.none { color: #64748b; }
+
+    .score-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 30px;
+      width: 30px;
+      height: 26px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.78rem;
+      border: 1px solid transparent;
+    }
+
+    .score-high {
+      background: var(--green);
+      color: var(--green-text);
+      border-color: #86efac;
+    }
+
+    .score-mid {
+      background: var(--yellow);
+      color: var(--yellow-text);
+      border-color: #fcd34d;
+    }
+
+    .score-low {
+      background: var(--red);
+      color: var(--red-text);
+      border-color: #fca5a5;
+    }
+
+    .score-none {
+      background: var(--neutral);
+      color: var(--muted);
+      border-color: var(--line);
+    }
+
+    td.overall {
+      font-weight: 800;
+    }
+
+    .empty {
+      padding: 24px 12px;
+      text-align: center;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .material-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .material-card {
+      border-radius: 12px;
+      border: 1px solid #bae6fd;
+      background: linear-gradient(180deg, #f8fcff, #ffffff);
+      padding: 10px;
+    }
+
+    .material-card h3 {
+      margin: 0 0 6px;
+      font-size: 0.88rem;
+      color: #0c4a6e;
+    }
+
+    .material-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 6px;
+      font-size: 0.76rem;
+      color: var(--muted);
+      font-weight: 700;
+      flex-wrap: wrap;
+    }
+
+    .material-meta strong {
+      color: var(--primary-dark);
+      font-size: 0.92rem;
+    }
+
+    .dist {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 3px;
+    }
+
+    .dist-item {
+      border-radius: 7px;
+      padding: 4px 1px;
+      text-align: center;
+      font-size: 0.68rem;
+      font-weight: 800;
+      border: 1px solid transparent;
+      line-height: 1.15;
+    }
+
+    .dist-item .n {
+      display: block;
+      font-size: 0.85rem;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 80;
+      padding: 12px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      width: min(640px, 100%);
+      max-height: min(86vh, 820px);
+      overflow: auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.28);
+      padding: 16px;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .modal-head h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: #0c4a6e;
+    }
+
+    .modal-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .close-btn {
+      border: none;
+      background: #e2e8f0;
+      color: #0f172a;
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      margin: 10px 0;
+    }
+
+    .detail-item {
+      border-radius: 10px;
+      padding: 8px 6px;
+      background: #f8fcff;
+      border: 1px solid #bae6fd;
+      text-align: center;
+    }
+
+    .detail-item .pos {
+      font-size: 0.68rem;
+      color: var(--muted);
+      font-weight: 700;
+      min-height: 2em;
+      line-height: 1.2;
+    }
+
+    .detail-item .val {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+
+    .summary-box {
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #f8fcff;
+      border: 1px solid #bae6fd;
+      margin-bottom: 10px;
+    }
+
+    .summary-box .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 3px 0;
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .summary-box .row span:first-child {
+      color: var(--muted);
+    }
+
+    .notes-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .note-item {
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+    }
+
+    .note-item .meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: #92400e;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+
+    .note-item .body {
+      color: #1f2937;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .generated-at {
+      font-size: 0.76rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    @media (min-width: 640px) {
+      .stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .material-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .toolbar {
+        grid-template-columns: 1.4fr 1fr auto;
+        align-items: end;
+      }
+      .detail-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      th, td { font-size: 0.82rem; }
+      thead th { font-size: 0.72rem; }
+      td.name-cell { width: 180px; }
+      td.name-cell .name { font-size: 0.84rem; }
+      .score-chip {
+        min-width: 34px;
+        width: 34px;
+        height: 30px;
+        font-size: 0.84rem;
+      }
+      td.rank-cell { width: 42px; }
+    }
+
+    @media (min-width: 1024px) {
+      .stats {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+      .material-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .app {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+      th, td { padding: 7px 4px; }
+      td.name-cell { width: 200px; padding-left: 10px; }
+      .score-chip {
+        min-width: 36px;
+        width: 36px;
+        height: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <strong>Hasil Penilaian Tes Divisi</strong>
+        <span id="generatedLabel">Data rekap lengkap peserta</span>
+      </div>
+      <div class="header-actions">
+        <a class="btn btn-light" href="/">Input Penguji</a>
+        <button class="btn btn-primary" id="reloadBtn" type="button">Muat Ulang</button>
+        <a class="btn btn-primary" id="csvBtn" href="/api/recap?format=csv" download>Export CSV</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="app">
+    <section class="card">
+      <h2>Ringkasan Hasil</h2>
+      <p class="help">Progres penilaian seluruh peserta terdaftar.</p>
+      <div class="stats">
+        <div class="stat">
+          <div class="value" id="statTotalParticipants">0</div>
+          <div class="label">Total Peserta</div>
+        </div>
+        <div class="stat">
+          <div class="value" id="statEvaluated">0</div>
+          <div class="label">Sudah Dinilai</div>
+        </div>
+        <div class="stat">
+          <div class="value" id="statComplete">0</div>
+          <div class="label">Penilaian Lengkap</div>
+        </div>
+        <div class="stat">
+          <div class="value" id="statPartial">0</div>
+          <div class="label">Belum Lengkap</div>
+        </div>
+        <div class="stat">
+          <div class="value" id="statOverallAvg">-</div>
+          <div class="label">Rata-rata Keseluruhan</div>
+        </div>
+      </div>
+      <p class="generated-at" id="generatedAt" style="margin-top:8px;"></p>
+    </section>
+
+    <section class="card">
+      <h2>Statistik per Materi</h2>
+      <p class="help">Rata-rata, jumlah dinilai, dan distribusi skor tiap materi.</p>
+      <div class="material-grid" id="materialGrid">
+        <div class="empty">Memuat statistik materi...</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Daftar Peserta & Peringkat</h2>
+      <p class="help">Urut rata-rata tertinggi. Klik nama untuk detail lengkap.</p>
+      <div class="toolbar">
+        <div>
+          <label class="field-label" for="searchInput">Cari Peserta</label>
+          <input id="searchInput" class="search-input" type="search" placeholder="Ketik nama peserta..." autocomplete="off" />
+        </div>
+        <div>
+          <label class="field-label" for="statusFilter">Filter Status</label>
+          <select id="statusFilter" class="filter-select">
+            <option value="all">Semua peserta</option>
+            <option value="Lengkap">Lengkap saja</option>
+            <option value="Belum lengkap">Belum lengkap</option>
+            <option value="Belum dinilai">Belum dinilai</option>
+          </select>
+        </div>
+        <div>
+          <button class="btn btn-primary" id="clearFilterBtn" type="button">Reset</button>
+        </div>
+      </div>
+
+      <div class="legend">
+        <span class="legend-item"><span class="swatch green"></span> 4-5 Mahir</span>
+        <span class="legend-item"><span class="swatch yellow"></span> 3 Biasa</span>
+        <span class="legend-item"><span class="swatch red"></span> 1-2 Kurang</span>
+        <span class="legend-item"><span class="swatch neutral"></span> Belum dinilai</span>
+      </div>
+
+      <div class="table-wrap" id="tableWrap">
+        <table id="resultTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th style="text-align:left;padding-left:8px;">Peserta</th>
+              <th>Mars</th>
+              <th>Lambang</th>
+              <th>Janji</th>
+              <th>Etik</th>
+              <th>Nadar</th>
+              <th>Mount</th>
+              <th>PAB</th>
+              <th>PPGD</th>
+              <th>SAR</th>
+              <th>Surv</th>
+              <th>Kosid</th>
+              <th>Makor</th>
+              <th>Rata</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td colspan="15" class="empty">Memuat data hasil...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="footer-note">Sumber data: Home Server SQLite /api/recap</p>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h3 id="modalTitle">Detail Peserta</h3>
+          <p id="modalSubtitle">Ringkasan lengkap penilaian</p>
+        </div>
+        <button class="close-btn" id="closeModalBtn" type="button" aria-label="Tutup">x</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    const POS_LIST = [
+      "Mars",
+      "Arti Lambang",
+      "Janji",
+      "Kode Etik",
+      "Nadar",
+      "Mountaineering",
+      "PAB",
+      "PPGD",
+      "SAR",
+      "Survival",
+      "Kosidan",
+      "Makorsasi",
+    ];
+
+    const POS_SHORT = {
+      "Mars": "Mars",
+      "Arti Lambang": "Arti Lambang",
+      "Janji": "Janji",
+      "Kode Etik": "Kode Etik",
+      "Nadar": "Nadar",
+      "Mountaineering": "Mountaineering",
+      "PAB": "PAB",
+      "PPGD": "PPGD",
+      "SAR": "SAR",
+      "Survival": "Survival",
+      "Kosidan": "Kosidan",
+      "Makorsasi": "Makorsasi",
+    };
+
+    let recapData = [];
+    let statsData = null;
+    let positions = POS_LIST;
+
+    function scoreClass(value) {
+      if (value === null || value === undefined) return "score-none";
+      const v = Number(value);
+      if (v >= 4) return "score-high";
+      if (v === 3) return "score-mid";
+      return "score-low";
+    }
+
+    function statusClass(status) {
+      if (status === "Lengkap") return "lengkap";
+      if (status === "Belum lengkap") return "partial";
+      return "none";
+    }
+
+    function formatScore(value) {
+      if (value === null || value === undefined) return "-";
+      const n = Number(value);
+      if (Number.isInteger(n)) return String(n);
+      return n.toFixed(2).replace(/\.00$/, "");
+    }
+
+    function scoreChip(value) {
+      if (value === null || value === undefined) {
+        return `<span class="score-chip score-none">-</span>`;
+      }
+      return `<span class="score-chip ${scoreClass(value)}">${formatScore(value)}</span>`;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function getFilteredData() {
+      const q = (document.getElementById("searchInput").value || "").trim().toLowerCase();
+      const filter = document.getElementById("statusFilter").value;
+
+      return recapData.filter((row) => {
+        const nameOk = !q || row.participant.toLowerCase().includes(q);
+        if (!nameOk) return false;
+        if (filter === "all") return true;
+        return row.status === filter;
+      });
+    }
+
+    function renderStats() {
+      const s = statsData || {};
+      document.getElementById("statTotalParticipants").textContent = String(s.totalParticipants ?? 0);
+      document.getElementById("statEvaluated").textContent = String(s.evaluatedParticipants ?? 0);
+      document.getElementById("statComplete").textContent = String(s.completeCount ?? 0);
+      document.getElementById("statPartial").textContent = String(s.partialCount ?? 0);
+      document.getElementById("statOverallAvg").textContent =
+        s.overallAverage === null || s.overallAverage === undefined ? "-" : formatScore(s.overallAverage);
+
+      if (s.generatedAt) {
+        document.getElementById("generatedAt").textContent =
+          `Diperbarui: ${new Date(s.generatedAt).toLocaleString("id-ID")}`;
+      }
+    }
+
+    function renderMaterialStats() {
+      const grid = document.getElementById("materialGrid");
+      const materials = (statsData && statsData.materialStats) || [];
+      if (materials.length === 0) {
+        grid.innerHTML = `<div class="empty">Belum ada statistik materi.</div>`;
+        return;
+      }
+
+      grid.innerHTML = materials.map((m) => {
+        const d = m.distribution || {};
+        return `
+          <div class="material-card">
+            <h3>${escapeHtml(m.material)}</h3>
+            <div class="material-meta">
+              <span>Rata-rata: <strong>${formatScore(m.average)}</strong></span>
+              <span>Dinilai: <strong>${m.evaluated}</strong> / ${m.evaluated + m.notEvaluated}</span>
+            </div>
+            <div class="dist">
+              <div class="dist-item score-low"><span class="n">${d[1] || 0}</span>1</div>
+              <div class="dist-item score-low"><span class="n">${d[2] || 0}</span>2</div>
+              <div class="dist-item score-mid"><span class="n">${d[3] || 0}</span>3</div>
+              <div class="dist-item score-high"><span class="n">${d[4] || 0}</span>4</div>
+              <div class="dist-item score-high"><span class="n">${d[5] || 0}</span>5</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById("tableBody");
+      const data = getFilteredData();
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="15" class="empty">
+              Tidak ada data yang cocok.<br />
+              Buka <a href="/">Input Penguji</a> untuk menilai peserta.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = data.map((row) => {
+        const cells = positions.map((pos) => `<td>${scoreChip(row.scores[pos])}</td>`).join("");
+        return `
+          <tr>
+            <td class="rank-cell">${row.rank === null ? "-" : row.rank}</td>
+            <td class="name-cell" data-participant="${escapeHtml(row.participant)}" title="${escapeHtml(row.participant)}">
+              <span class="name">${escapeHtml(row.participant)}</span>
+              <span class="sub ${statusClass(row.status)}">${escapeHtml(row.status)} ${row.evaluatedMaterials}/${row.totalMaterials}</span>
+            </td>
+            ${cells}
+            <td class="overall">${scoreChip(row.overall)}</td>
+          </tr>
+        `;
+      }).join("");
+
+      tbody.querySelectorAll(".name-cell").forEach((cell) => {
+        cell.addEventListener("click", () => {
+          openDetail(cell.getAttribute("data-participant"));
+        });
+      });
+    }
+
+    function openDetail(participant) {
+      const row = recapData.find((r) => r.participant === participant);
+      if (!row) return;
+
+      document.getElementById("modalTitle").textContent = row.participant;
+      document.getElementById("modalSubtitle").textContent =
+        `Peringkat ${row.rank === null ? "-" : row.rank} • Status ${row.status}`;
+
+      const summary = `
+        <div class="summary-box">
+          <div class="row"><span>Rata-rata keseluruhan</span><strong>${formatScore(row.overall)}</strong></div>
+          <div class="row"><span>Materi dinilai</span><strong>${row.evaluatedMaterials} / ${row.totalMaterials}</strong></div>
+          <div class="row"><span>Total baris evaluasi</span><strong>${row.evaluationCount}</strong></div>
+          <div class="row"><span>Status</span><strong>${escapeHtml(row.status)}</strong></div>
+        </div>
+      `;
+
+      const scoreSummary = `
+        <div class="detail-grid">
+          ${positions.map((pos) => `
+            <div class="detail-item">
+              <div class="pos">${escapeHtml(POS_SHORT[pos] || pos)}</div>
+              <div class="val">${formatScore(row.scores[pos])}</div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+
+      const notes = row.notes || [];
+      const notesHtml = notes.length === 0
+        ? `<p class="help" style="margin:0;">Tidak ada catatan khusus untuk peserta ini.</p>`
+        : `<div class="notes-list">${notes.map((n) => `
+            <div class="note-item">
+              <div class="meta">
+                <span>${escapeHtml(n.pos)}</span>
+                <span>Skor ${formatScore(n.score)}</span>
+              </div>
+              <div class="body">${escapeHtml(n.notes)}</div>
+            </div>
+          `).join("")}</div>`;
+
+      document.getElementById("modalBody").innerHTML =
+        summary +
+        `<h4 style="margin:8px 0 4px;color:#0c4a6e;font-size:0.95rem;">Skor per Materi</h4>` +
+        scoreSummary +
+        `<h4 style="margin:8px 0 4px;color:#0c4a6e;font-size:0.95rem;">Catatan Khusus</h4>` +
+        notesHtml;
+
+      document.getElementById("modalBackdrop").classList.add("open");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+      document.getElementById("modalBackdrop").classList.remove("open");
+      document.body.style.overflow = "";
+    }
+
+    async function loadData() {
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = `<tr><td colspan="15" class="empty">Memuat data hasil...</td></tr>`;
+      try {
+        const res = await fetch("/api/recap");
+        const payload = await res.json();
+        if (!res.ok) throw new Error(payload.message || `HTTP ${res.status}`);
+
+        recapData = payload.data || [];
+        statsData = payload.stats || null;
+        positions = payload.positions || POS_LIST;
+
+        if (statsData) {
+          statsData.generatedAt = payload.generatedAt || new Date().toISOString();
+        }
+
+        document.getElementById("generatedLabel").textContent =
+          `${recapData.length} peserta • ${statsData?.totalEvaluations ?? 0} baris evaluasi`;
+
+        renderStats();
+        renderMaterialStats();
+        renderTable();
+      } catch (err) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="15" class="empty" style="color:#b91c1c;">
+              Gagal memuat data: ${escapeHtml(err.message)}
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    document.getElementById("reloadBtn").addEventListener("click", loadData);
+    document.getElementById("searchInput").addEventListener("input", renderTable);
+    document.getElementById("statusFilter").addEventListener("change", renderTable);
+    document.getElementById("clearFilterBtn").addEventListener("click", () => {
+      document.getElementById("searchInput").value = "";
+      document.getElementById("statusFilter").value = "all";
+      renderTable();
+    });
+    document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+    document.getElementById("modalBackdrop").addEventListener("click", (e) => {
+      if (e.target.id === "modalBackdrop") closeModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeModal();
+    });
+
+    loadData();
+    setInterval(loadData, 15000);
+  </script>
+</body>
+</html>
